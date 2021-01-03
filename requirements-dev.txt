@@ -5,3 +5,4 @@ ipython
 ipdb
 pylint
 black
+sqlalchemy-stubs  # for sqlalchemy stubs (fix annoying error - Invalid class Base)
