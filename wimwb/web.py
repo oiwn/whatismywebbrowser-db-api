@@ -27,11 +27,13 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup():
+    """Create connection to database at startup"""
     await database.connect()
 
 
 @app.on_event("shutdown")
 async def shutdown():
+    """Close connection to database at startup"""
     await database.disconnect()
 
 
