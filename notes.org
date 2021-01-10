@@ -1,5 +1,6 @@
 #+TITLE: Project notes
 
 * Tasks
-** docker file for application
-** docker compose file to run whole app with database
+** TODO docker file for application
+** TODO docker compose file to run whole app with database
+** use sqlalchemy instead of connection

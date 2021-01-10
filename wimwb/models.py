@@ -10,7 +10,8 @@ metadata = Base.metadata
 
 class WhatismybrowserUseragent(Base):
     """Created automatically via `sqlacodegen`"""
-    __tablename__ = 'whatismybrowser_useragent'
+
+    __tablename__ = "whatismybrowser_useragent"
 
     id = Column(Integer, primary_key=True)
     user_agent = Column(LONGTEXT)
@@ -51,3 +52,8 @@ class WhatismybrowserUseragent(Base):
     first_seen_at = Column(DATETIME(fsp=6), nullable=False)
     last_seen_at = Column(DATETIME(fsp=6), nullable=False)
     updated_at = Column(DATETIME(fsp=6))
+
+    def __repr__(self):
+        return "<UserAgent(ua='{}', times_seen='{}')>".format(
+            self.user_agent, self.times_seen
+        )

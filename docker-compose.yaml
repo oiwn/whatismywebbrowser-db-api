@@ -13,6 +13,8 @@ services:
       - wimwb
   mysql:
     build: mysql:latest
+    environmen:
+      - WIMWB_DB_PASSWORD=${WIMWB_DB_PASSWORD}
     volumes:
       - "data:/docker-entrypoint-initdb.d"
     ports:
