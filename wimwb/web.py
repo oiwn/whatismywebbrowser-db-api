@@ -1,7 +1,11 @@
+from typing import List
+
 import databases
 import sqlalchemy
 from fastapi import FastAPI
 from pydantic import BaseSettings
+
+from wimwb.schemas import UserAgentShort
 
 
 class Settings(BaseSettings):
@@ -37,9 +41,9 @@ async def shutdown():
     await database.disconnect()
 
 
-@app.get("/user_agents/")
-async def random_user_agents():
+@app.get("/user_agents/", response_model=List[UserAgentShort])
+async def random_user_agents(limit: int):
     """Docstring"""
-    query = "SELECT * FROM whatismybrowser_useragent LIMIT 5"
+    query = "SELECT * FROM whatismybrowser_useragent ORDER BY RAND() LIMIT 5"
     rows = await database.fetch_all(query=query)
-    return {"user_agents": rows}
+    return rows

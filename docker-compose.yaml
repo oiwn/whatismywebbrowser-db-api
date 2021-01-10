@@ -1,0 +1,28 @@
+version: '3'
+services:
+  webapp:
+    build: .
+    environment:
+      - WIMWB_ENV=prod
+    command: "uvcorn wimwb.web:app"
+    ports:
+      - "8000:3000"
+    depends_on:
+      - "mysql"
+    networks:
+      - wimwb
+  mysql:
+    build: mysql:latest
+    volumes:
+      - "data:/docker-entrypoint-initdb.d"
+    ports:
+      - "3306:3306"
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:3000"]
+    interval: 1m30s
+    timeout: 10s
+    retries: 3
+    start_period: 40s
+networks:
+  wimwb:
+    driver: bridge
