@@ -29,7 +29,7 @@ settings = Settings()
 database = databases.Database(settings.database_uri)
 metadata = sqlalchemy.MetaData()
 engine = sqlalchemy.create_engine(settings.database_uri)
-user_agents = WhatismybrowserUseragent.__table__
+user_agents = WhatismybrowserUseragent.__table__  # pylint: disable=no-member
 
 # setup application
 app = FastAPI()
