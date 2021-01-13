@@ -103,6 +103,9 @@ celerybeat.pid
 
 # Environments
 .env
+.env.test
+.env.dev
+.env.prod
 .venv
 env/
 venv/
@@ -133,3 +136,4 @@ dmypy.json
 .pylintrc
 conf/prod.yaml
 data/*.sql
+tests/db_dump.json
