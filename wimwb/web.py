@@ -52,7 +52,7 @@ async def random_user_agents(limit: int = Query(5, gt=0, le=1000)):
     query = (
         user_agents.select()
         .where(user_agents.c.software_type == "browser")
-        .order_by(func.rand())
+        .order_by(func.random())
         .limit(limit)
     )
     rows = await database.fetch_all(query=query)

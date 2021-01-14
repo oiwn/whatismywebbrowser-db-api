@@ -136,4 +136,6 @@ dmypy.json
 .pylintrc
 conf/prod.yaml
 data/*.sql
-tests/db_dump.json
+
+# tests
+test_db.sqlite

@@ -1,4 +1,4 @@
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,no-member
 import json
 import datetime
 
@@ -7,13 +7,12 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from wimwb.web import app
+from wimwb.web import app, settings
 from wimwb.models import WhatismybrowserUseragentModel
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    settings.database_uri, connect_args={"check_same_thread": False}
 )
 TestingSessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine
@@ -37,9 +36,12 @@ def convert_datetime(datetime_str):
 
 def import_db_dump(db):
     """Import data from dump into the database"""
+    if db.query(WhatismybrowserUseragentModel).count() > 0:
+        return
+
     with open("tests/db_dump.json") as json_file:
         rows = json.loads(json_file.read())
-        for row in rows[2:3]:
+        for row in rows:
             # convert dates
             # 2010-03-23 10:42:17"
             if row["first_seen_at"]:
@@ -64,10 +66,8 @@ def get_db():
         import_db_dump(db)  # import database from json dump
         yield db
     finally:
-        WhatismybrowserUseragentModel.__table__.drop(
-            engine
-        )  # pylint: disable=no-member
-        db.close()  # pylint: disable=no-member
+        db.close()
+        WhatismybrowserUseragentModel.__table__.drop(engine)
 
 
 client = TestClient(app)
@@ -83,14 +83,11 @@ def test_app_init_with_test_sqlite():
 def test_database_import(get_db):
     """Check database imported"""
     obj = get_db.query(WhatismybrowserUseragentModel).first()
-
-    print(obj)
     assert obj is not None
 
 
 def test_database_can_connect():
     """Check app able to connect to database"""
-    from wimwb.web import settings
 
     assert "sqlite" in settings.database_uri
 
