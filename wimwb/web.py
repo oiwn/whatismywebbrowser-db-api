@@ -8,7 +8,7 @@ from fastapi import FastAPI, Query
 from sqlalchemy.sql.expression import func
 
 from wimwb.schemas import UserAgentShort
-from wimwb.models import WhatismybrowserUseragent
+from wimwb.models import WhatismybrowserUseragentModel
 
 
 class Settings(BaseSettings):
@@ -17,26 +17,18 @@ class Settings(BaseSettings):
     app_name: str = "Whatismywebbrowser database API"
     database_uri: str
 
-    '''
-    class Config:  # pylint: disable=too-few-public-methods
-        """Automatically load settings from .env file"""
-
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-    '''
-
 
 # setup config loading
-env = os.environ.get("wimwb_env", "dev")
+env = os.environ.get("WIMWB_ENV", "dev")
+
+settings = Settings(_env_file=".env", _env_file_encoding="utf-8")
 if env == "test":
     settings = Settings(_env_file=".env.test", _env_file_encoding="utf-8")
-else:
-    settings = Settings(_env_file=".env", _env_file_encoding="utf-8")
 
 # database related
 database = databases.Database(settings.database_uri)
 engine = sqlalchemy.create_engine(settings.database_uri)
-user_agents = WhatismybrowserUseragent.__table__  # pylint: disable=no-member
+user_agents = WhatismybrowserUseragentModel.__table__  # pylint: disable=E1101
 
 # setup application
 app = FastAPI()
