@@ -6,13 +6,16 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from wimwb.web import app, settings
 from wimwb.models import WhatismybrowserUseragentModel
 
 
 engine = create_engine(
-    settings.database_uri, connect_args={"check_same_thread": False}
+    settings.database_uri,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine

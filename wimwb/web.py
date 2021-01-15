@@ -1,10 +1,12 @@
 import os
 from typing import List
+from datetime import datetime, timedelta
 
 import databases
 import sqlalchemy
 from pydantic import BaseSettings
 from fastapi import FastAPI, Query
+from sqlalchemy.sql import and_
 from sqlalchemy.sql.expression import func
 
 from wimwb.schemas import UserAgentShort
@@ -30,6 +32,7 @@ database = databases.Database(settings.database_uri)
 engine = sqlalchemy.create_engine(settings.database_uri)
 user_agents = WhatismybrowserUseragentModel.__table__  # pylint: disable=E1101
 
+
 # setup application
 app = FastAPI()
 
@@ -47,11 +50,24 @@ async def shutdown():
 
 
 @app.get("/user-agents/", response_model=List[UserAgentShort])
-async def random_user_agents(limit: int = Query(5, gt=0, le=1000)):
+async def random_user_agents(
+    software_type: str = "browser",
+    limit: int = Query(5, gt=0, le=1000),
+    seen_times_gt: int = Query(1000, gt=0),
+    updated_back_weeks: int = Query(100, gt=0),
+):
     """Return random user agents"""
+    how_old = datetime.utcnow() - timedelta(weeks=updated_back_weeks)
+
     query = (
         user_agents.select()
-        .where(user_agents.c.software_type == "browser")
+        .where(
+            and_(
+                user_agents.c.software_type == software_type,
+                user_agents.c.times_seen >= seen_times_gt,
+                user_agents.c.last_seen_at >= how_old,
+            )
+        )
         .order_by(func.random())
         .limit(limit)
     )

@@ -3,4 +3,7 @@
 * Tasks
 ** TODO docker file for application
 ** TODO docker compose file to run whole app with database
-** use sqlalchemy instead of connection
+** DONE use sqlalchemy core instead of connection
+** DONE add basic tests
+** TODO sqlite in memory for testing database (dependency injection override)
+
