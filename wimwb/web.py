@@ -23,9 +23,12 @@ class Settings(BaseSettings):
 # setup config loading
 env = os.environ.get("WIMWB_ENV", "dev")
 
-settings = Settings(_env_file=".env", _env_file_encoding="utf-8")
-if env == "test":
-    settings = Settings(_env_file=".env.test", _env_file_encoding="utf-8")
+# TODO: this is total mess, need to find a way to
+# split settings to 3 env - docker, dev and test
+if os.path.exists(".env"):
+    settings = Settings(_env_file=".env", _env_file_encoding="utf-8")
+    if env == "test":
+        settings = Settings(_env_file=".env.test", _env_file_encoding="utf-8")
 
 # database related
 database = databases.Database(settings.database_uri)

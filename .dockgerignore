@@ -2,3 +2,4 @@ data/*.sql
 */__pycache__
 htmlcov
 .git
+.env
