@@ -76,3 +76,30 @@ async def random_user_agents(
     )
     rows = await database.fetch_all(query=query)
     return rows
+
+
+@app.get("/mobile-user-agents/", response_model=List[UserAgentShort])
+async def random_mobile_user_agents(
+    software_type: str = "browser",
+    limit: int = Query(5, gt=0, le=1000),
+    seen_times_gt: int = Query(1000, gt=0),
+    updated_back_weeks: int = Query(100, gt=0),
+):
+    """Return random user agents"""
+    how_old = datetime.utcnow() - timedelta(weeks=updated_back_weeks)
+
+    query = (
+        user_agents.select()
+        .where(
+            and_(
+                user_agents.c.software_type == software_type,
+                user_agents.c.hardware_type == "mobile",
+                user_agents.c.times_seen >= seen_times_gt,
+                user_agents.c.last_seen_at >= how_old,
+            )
+        )
+        .order_by(func.random())
+        .limit(limit)
+    )
+    rows = await database.fetch_all(query=query)
+    return rows
